@@ -11,11 +11,14 @@ pub type Request = tide::Request<State>;
 
 #[async_std::main]
 async fn main() -> tide::Result<()> {
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8000".to_string());
+
     tide::log::with_level(tide::log::LevelFilter::Info);
 
     let repo = db::BtcRepo::new().await;
     let app = get_app(Box::new(repo)).await?;
-    app.listen("127.0.0.1:8000").await?;
+
+    app.listen(format!("0.0.0.0:{}", port)).await?;
     Ok(())
 }
 
@@ -29,7 +32,5 @@ pub async fn get_app(
     app.at("/utxo").post(handler::utxo::create_txn);
     app.at("/balance/:address").get(handler::utxo::get_balance);
 
-    // app.at("/healthz")
-    //     .get(|| async { Ok(tide::Response::new(tide::StatusCode::Ok)) });
     Ok(app)
 }
