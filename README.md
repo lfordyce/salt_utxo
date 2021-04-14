@@ -21,3 +21,13 @@ curl 'http://0.0.0.0:8000/api/v1/records/offset/{offset}/limit/{limit}'
 ```
 curl 'http://0.0.0.0:8000/api/v1/records/offset/0/limit/20'
 ```
+
+### Postgres Locally:
+* Build:
+```
+docker build -t psql_utxo .
+```
+* Run:
+```
+docker run --rm -e POSTGRES_PASSWORD=changeme -e POSTGRES_DB=postgres -p 5432:5432 psql_utxo:latest
+```
