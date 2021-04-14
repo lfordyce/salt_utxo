@@ -5,14 +5,12 @@ use tide::{Body, StatusCode};
 
 #[derive(Default, Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ErrorResponse {
-    pub code: i64,
     pub message: String,
 }
 
 impl From<Box<dyn std::error::Error>> for ErrorResponse {
     fn from(item: Box<dyn std::error::Error>) -> Self {
         ErrorResponse {
-            code: 3,
             message: format!("{} : {}", "error parsing json body", item.to_string()),
         }
     }
@@ -21,7 +19,6 @@ impl From<Box<dyn std::error::Error>> for ErrorResponse {
 impl From<http_types::Error> for ErrorResponse {
     fn from(item: http_types::Error) -> Self {
         ErrorResponse {
-            code: 3,
             message: format!("{} : {}", "error parsing json body", item.to_string()),
         }
     }
@@ -72,6 +69,21 @@ pub async fn index(request: crate::Request) -> tide::Result {
             let mut res = tide::Response::new(StatusCode::InternalServerError);
             res.set_body(Body::from_json(&ErrorResponse::from(e))?);
             Ok(res)
+        }
+    }
+}
+
+pub async fn get_addrs(request: crate::Request) -> tide::Result {
+    match request.state().db().find_all_addrs().await {
+        Ok(rows) => {
+            let mut res = tide::Response::new(StatusCode::Ok);
+            res.set_body(tide::Body::from_json(&rows)?);
+            Ok(res)
+        }
+        Err(e) => {
+            let mut res = tide::Response::new(StatusCode::InternalServerError);
+            res.set_body(Body::from_json(&ErrorResponse::from(e))?);
+            return Ok(res);
         }
     }
 }

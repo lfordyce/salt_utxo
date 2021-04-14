@@ -29,16 +29,13 @@ pub async fn get_app(
 
     let mut app = tide::Server::with_state(state.clone());
     app.at("/api/v1").nest({
-        let mut api = tide::Server::with_state(state.clone());
+        let mut api = tide::Server::with_state(state);
 
-        api.at("/addrs").get(handler::utxo::get_balance); // TODO
-
+        api.at("/addrs").get(handler::utxo::get_addrs);
         api.at("/addrs/:address").get(handler::utxo::get_balance);
-
         api.at("/records/offset/:offset/limit/:limit")
             .get(handler::utxo::index);
-
-        api.at("/utxo").post(handler::utxo::create_txn); // TODO
+        api.at("/record").post(handler::utxo::create_txn);
         api
     });
     Ok(app)

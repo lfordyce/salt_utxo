@@ -22,11 +22,11 @@ RUN cargo build --release
 FROM debian:10-slim
 
 # Import from builder.
-COPY --from=builder /usr/src/target/release/salt_utxo .
+COPY --from=builder /usr/src/target/release/salt_utxo_rust .
 
 RUN apt-get update && \
     apt-get dist-upgrade -y && \
     apt-get install -y libssl-dev
 
 USER 1000
-CMD ["./salt_utxo"]
+CMD ["./salt_utxo_rust"]

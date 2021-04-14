@@ -1,5 +1,5 @@
 use crate::entity::repository::Repository;
-use crate::entity::utxo::{Utxo, UtxoBalance};
+use crate::entity::utxo::{Address, Utxo, UtxoBalance};
 
 use async_trait::async_trait;
 use sqlx::PgPool;
@@ -30,6 +30,13 @@ impl Repository for BtcRepo {
         .bind(offset)
         .fetch_all(&self.pool)
         .await?;
+        Ok(rows)
+    }
+
+    async fn find_all_addrs(&self) -> Result<Vec<Address>, Box<dyn Error>> {
+        let rows = sqlx::query_as::<_, Address>("SELECT DISTINCT address FROM btc_utxo")
+            .fetch_all(&self.pool)
+            .await?;
         Ok(rows)
     }
 

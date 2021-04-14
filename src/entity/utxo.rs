@@ -16,3 +16,8 @@ pub struct UtxoBalance {
     pub balance: Option<BigDecimal>,
     pub tx_count: i64,
 }
+
+#[derive(sqlx::FromRow, Debug, Deserialize, Serialize)]
+pub struct Address {
+    pub address: String,
+}

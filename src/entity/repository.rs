@@ -1,4 +1,4 @@
-use crate::entity::utxo::{Utxo, UtxoBalance};
+use crate::entity::utxo::{Address, Utxo, UtxoBalance};
 use async_trait::async_trait;
 
 #[async_trait]
@@ -8,6 +8,7 @@ pub trait Repository: RepoClone + Send + Sync + 'static {
         limit: i32,
         offset: i32,
     ) -> Result<Vec<Utxo>, Box<dyn std::error::Error>>;
+    async fn find_all_addrs(&self) -> Result<Vec<Address>, Box<dyn std::error::Error>>;
     async fn find_balance_by_address(
         &self,
         address: &str,
