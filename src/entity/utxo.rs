@@ -13,6 +13,6 @@ pub struct Utxo {
 
 #[derive(sqlx::FromRow, Debug, Deserialize, Serialize)]
 pub struct UtxoBalance {
-    pub balance: BigDecimal,
+    pub balance: Option<BigDecimal>,
     pub tx_count: i64,
 }

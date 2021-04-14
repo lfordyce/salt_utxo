@@ -22,11 +22,14 @@ impl BtcRepo {
 
 #[async_trait]
 impl Repository for BtcRepo {
-    async fn find_all(&self) -> Result<Vec<Utxo>, Box<dyn Error>> {
-        let rows =
-            sqlx::query_as::<_, Utxo>("SELECT id, txid, address, amount, spent FROM btc_utxo")
-                .fetch_all(&self.pool)
-                .await?;
+    async fn find_all(&self, limit: i32, offset: i32) -> Result<Vec<Utxo>, Box<dyn Error>> {
+        let rows = sqlx::query_as::<_, Utxo>(
+            "SELECT id, txid, address, amount, spent FROM btc_utxo LIMIT $1 OFFSET $2",
+        )
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(&self.pool)
+        .await?;
         Ok(rows)
     }
 

@@ -3,7 +3,11 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait Repository: RepoClone + Send + Sync + 'static {
-    async fn find_all(&self) -> Result<Vec<Utxo>, Box<dyn std::error::Error>>;
+    async fn find_all(
+        &self,
+        limit: i32,
+        offset: i32,
+    ) -> Result<Vec<Utxo>, Box<dyn std::error::Error>>;
     async fn find_balance_by_address(
         &self,
         address: &str,

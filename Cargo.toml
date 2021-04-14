@@ -1,5 +1,5 @@
 [package]
-name = "salt_utxo"
+name = "salt_utxo_rust"
 version = "0.1.0"
 authors = ["Lee Fordyce <leefordyce@gmail.com>"]
 edition = "2018"

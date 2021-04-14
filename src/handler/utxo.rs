@@ -28,19 +28,41 @@ impl From<http_types::Error> for ErrorResponse {
 }
 
 #[derive(Deserialize)]
-#[serde(default)]
+#[serde(rename_all = "camelCase")]
 struct Filter {
-    spent: bool,
+    unspent_only: bool,
 }
 
 impl Default for Filter {
     fn default() -> Self {
-        Self { spent: false }
+        Self {
+            unspent_only: false,
+        }
     }
 }
 
 pub async fn index(request: crate::Request) -> tide::Result {
-    match request.state().db().find_all().await {
+    let limit: &str = match request.param("limit") {
+        Ok(address) => address,
+        Err(e) => {
+            let mut res = tide::Response::new(StatusCode::BadRequest);
+            res.set_body(Body::from_json(&ErrorResponse::from(e))?);
+            return Ok(res);
+        }
+    };
+
+    let offset: &str = match request.param("offset") {
+        Ok(address) => address,
+        Err(e) => {
+            let mut res = tide::Response::new(StatusCode::BadRequest);
+            res.set_body(Body::from_json(&ErrorResponse::from(e))?);
+            return Ok(res);
+        }
+    };
+    let limit_int = limit.parse::<i32>().unwrap();
+    let offset_int = offset.parse::<i32>().unwrap();
+
+    match request.state().db().find_all(limit_int, offset_int).await {
         Ok(rows) => {
             let mut res = tide::Response::new(StatusCode::Ok);
             res.set_body(tide::Body::from_json(&rows)?);
@@ -67,7 +89,7 @@ pub async fn get_balance(request: crate::Request) -> tide::Result {
     match request
         .state()
         .db()
-        .find_balance_by_address(address, filter.spent)
+        .find_balance_by_address(address, filter.unspent_only)
         .await
     {
         Ok(result) => {
