@@ -58,11 +58,10 @@ curl 'http://0.0.0.0:8000/api/v1/records/offset/0/limit/20'
 ```
 
 ### Additional notes:
-- Build standalone docker PostgreSQL:
+- Build and run standalone docker PostgreSQL:
 ```shell
+# Build
 cd psql && docker build -t psql_utxo .
-```
-- Run:
-```shell
+# Run
 docker run --rm -e POSTGRES_PASSWORD=changeme -e POSTGRES_DB=postgres -p 5432:5432 psql_utxo:latest
 ```
